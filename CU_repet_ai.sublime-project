@@ -1,0 +1,17 @@
+{
+	"folders":
+	[
+		{
+			"path": ".",
+		}
+	],
+	"debugger_configurations":
+	[
+		{
+	        "type": "go",
+	        "name": "Launch",
+	        "request": "launch",
+	        "program": "${folder}" 
+	    }
+	],
+}

@@ -1,0 +1,703 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"Pr",
+				"Println"
+			],
+			[
+				"help",
+				"helpList"
+			],
+			[
+				"su",
+				"sum_prev"
+			],
+			[
+				"s",
+				"sum_aft"
+			],
+			[
+				"_s",
+				"_system"
+			],
+			[
+				"Sys",
+				"Systems"
+			],
+			[
+				"f",
+				"fGeometry"
+			],
+			[
+				"Ge",
+				"fGeomentry"
+			],
+			[
+				"_c",
+				"_current_pos"
+			],
+			[
+				"e",
+				"end_mode"
+			],
+			[
+				"d",
+				"distance"
+			],
+			[
+				"c",
+				"convert_from_steps"
+			],
+			[
+				"co",
+				"convert_to_steps"
+			],
+			[
+				"_p",
+				"_profile"
+			],
+			[
+				"ac",
+				"accel_steps"
+			],
+			[
+				"speed",
+				"speed_steps"
+			],
+			[
+				"M",
+				"MoveMode"
+			],
+			[
+				"acc",
+				"accel_steps"
+			],
+			[
+				"_",
+				"_profile"
+			],
+			[
+				"uint",
+				"uint32_t"
+			],
+			[
+				"spee",
+				"speed_norm"
+			],
+			[
+				"speed_",
+				"speed_unit"
+			],
+			[
+				"se",
+				"ses_t"
+			],
+			[
+				"t",
+				"t_string"
+			],
+			[
+				"m_se",
+				"m_ses"
+			],
+			[
+				"RIGHT",
+				"RIGHT_DRIVE2"
+			],
+			[
+				"DRIVE",
+				"DRIVE_RIGHT_DIST"
+			],
+			[
+				"TUR",
+				"TURN_TOLL"
+			],
+			[
+				"MAX",
+				"MAX_SPEED"
+			],
+			[
+				"e_",
+				"e_dist"
+			],
+			[
+				"de",
+				"delta"
+			],
+			[
+				"udp",
+				"udp_diff"
+			],
+			[
+				"p",
+				"point_idx"
+			],
+			[
+				"poi",
+				"point_idx"
+			],
+			[
+				"po",
+				"point_idx"
+			],
+			[
+				"DR",
+				"DRIVE"
+			],
+			[
+				"el",
+				"elif"
+			],
+			[
+				"D",
+				"DRIVING"
+			],
+			[
+				"an",
+				"angular_z"
+			],
+			[
+				"star",
+				"start_angle"
+			],
+			[
+				"cal",
+				"calculate_error"
+			],
+			[
+				"next",
+				"next_error"
+			],
+			[
+				"A",
+				"ANGLE_TOL"
+			],
+			[
+				"st",
+				"start_angle"
+			],
+			[
+				"con",
+				"continue"
+			],
+			[
+				"BP",
+				"BP_y"
+			],
+			[
+				"AB",
+				"AB_y"
+			],
+			[
+				"B",
+				"BP_x"
+			],
+			[
+				"dist",
+				"turn_dist"
+			],
+			[
+				"ne",
+				"next_point_y"
+			],
+			[
+				"a",
+				"angle"
+			],
+			[
+				"Ma",
+				"MAX_SPEED"
+			],
+			[
+				"S",
+				"STOP_ROTATE"
+			],
+			[
+				"v",
+				"vy"
+			],
+			[
+				"for",
+				"forward"
+			],
+			[
+				"point",
+				"point_idx"
+			],
+			[
+				"poin",
+				"point_idx"
+			],
+			[
+				"MIN",
+				"MIN_BACKWARD_SPEED"
+			],
+			[
+				"soc",
+				"sock_cmd"
+			],
+			[
+				"turn",
+				"turn_correction"
+			],
+			[
+				"as",
+				"aspectCardsText"
+			],
+			[
+				"car",
+				"cardsText"
+			],
+			[
+				"fun",
+				"function"
+			],
+			[
+				"tra",
+				"transition"
+			],
+			[
+				"pa",
+				"padding"
+			],
+			[
+				"font",
+				"font-family"
+			],
+			[
+				"margin",
+				"margin-bottom"
+			],
+			[
+				"al",
+				"align-content"
+			],
+			[
+				"ba",
+				"background-size"
+			],
+			[
+				"wid",
+				"width"
+			],
+			[
+				"flex",
+				"flex-direction"
+			],
+			[
+				"back",
+				"background-image"
+			],
+			[
+				"bac",
+				"background-color"
+			],
+			[
+				"ios",
+				"iostream"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"Preferences: Debugger Settings",
+				"Preferences: Debugger Settings"
+			],
+			[
+				"debugger: ed",
+				"Debugger: Edit Configurations"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"go",
+				"GoDebug: Disable"
+			],
+			[
+				"hide",
+				"Help: Indexing Status"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"ena",
+				"Package Control: Enable Package"
+			],
+			[
+				"list",
+				"Package Control: List Packages"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"up",
+				"Package Control: Upgrade All Packages"
+			],
+			[
+				"rem",
+				"Package Control: Remove Package"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			],
+			[
+				"package rem",
+				"Package Control: Remove Package"
+			],
+			[
+				"package",
+				"Package Control: Remove Repository"
+			],
+			[
+				"LSP ",
+				"Preferences: LSP-gopls Settings"
+			],
+			[
+				"package in",
+				"Package Control: Install Package"
+			],
+			[
+				"pack",
+				"View Package File"
+			],
+			[
+				"packa",
+				"Preferences: Browse Packages"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 268.0,
+		"history":
+		[
+			"]",
+			"clear",
+			"import subprocess; subprocess.check_output(['/Users/demiantarasov/go/bin/dlv', 'version'])\n",
+			"import subprocess; subprocess.check_output(['/Users/demiantarasov/go/bin/dlv', 'version'])\nimport subprocess; subprocess.check_output(['/Users/demiantarasov/go/bin/dlv', 'version'])\n",
+			"import os; print(os.environ['PATH'])",
+			"import os; print(os.environ['PATH'])\nimport os; print(os.environ['PATH'])\nimport os; print(os.environ['PATH'])\nimport os; print(os.environ['PATH'])\nimport os; print(os.environ['PATH'])\nimport os; print(os.environ['PATH'])\nimport os; print(os.environ['PATH'])",
+			"import os; os.environ[\"PATH\"]",
+			"import os; os.environ[\"PATH\"",
+			"subl .",
+			"sublime.run_command('advanced_install_package', {'packages': 'SublimeLinter'})",
+			"sublime.run_command('install_packages', {'packages': ['SublimeLinter'], 'unattended': True})",
+			"sublime.active_window().run_command('install_package', {'package_name': 'SublimeLinter'})",
+			"from urllib.request import urlretrieve;urlretrieve(url=\"https://github.com/wbond/package_control/releases/latest/download/Package.Control.sublime-package\", filename=sublime.installed_packages_path() + '/Package Control.sublime-package')"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/demiantarasov/Documents/CU_repet_ai"
+	],
+	"file_history":
+	[
+		"/Users/demiantarasov/Documents/CU_repet_project/back_repet_ai/internal/ai/yandex_agent.go",
+		"/Users/demiantarasov/Documents/gocoding/huecoding/huecoding.sublime-project",
+		"/Users/demiantarasov/Documents/gocoding/huecoding/main.go",
+		"/Users/demiantarasov/Library/Application Support/Sublime Text/Packages/User/GoDebug.sublime-settings",
+		"/Users/demiantarasov/Library/Application Support/Sublime Text/Installed Packages/Fix Mac Path.sublime-package",
+		"<untitled 176>",
+		"/Users/demiantarasov/Library/Application Support/Sublime Text/Packages/GoDebug/GoDebug.sublime-settings",
+		"/Users/demiantarasov/Documents/gocoding/huecoding/.golangci.yml",
+		"/Users/demiantarasov/Documents/gocoding/file-transfer/go.mod",
+		"/Users/demiantarasov/Documents/gocoding/file-transfer/internal/mover/mover.go",
+		"/Users/demiantarasov/Documents/gocoding/file-transfer/cmd/cli/main.go",
+		"/Users/demiantarasov/Documents/gocoding/file-splitter/internal/mover/mover.go",
+		"/Users/demiantarasov/Documents/gocoding/file-splitter/cmd/cli/main.go",
+		"/Users/demiantarasov/Documents/gocoding/file-splitter/go.mod",
+		"/Users/demiantarasov/Documents/gocoding/go-todo-cli/data/tasks.json",
+		"/Users/demiantarasov/Documents/gocoding/go-todo-cli/pkg/todo/task.go",
+		"/Users/demiantarasov/Documents/gocoding/go-todo-cli/cmd/todo/main.go",
+		"/Users/demiantarasov/Documents/gocoding/go-todo-cli/pkg/todo/help.txt",
+		"/Users/demiantarasov/Downloads/gocoding/hello.go",
+		"/Users/demiantarasov/Downloads/rs/main.py",
+		"/Users/demiantarasov/Downloads/rs/test.py",
+		"/Users/demiantarasov/Downloads/answer.py",
+		"/Users/demiantarasov/Downloads/text.txt",
+		"/Users/demiantarasov/Downloads/miertvyie_dushi_-_nikolai_vasilievich_goghol.txt",
+		"/Users/demiantarasov/Downloads/miertvyie_dushi_-_nikolai_vasilievich_goghol(1).txt",
+		"/Users/demiantarasov/Documents/Проекты ВСОШ робототехника/VSOSH_RT_2026/Код функции/main/tasks.ino",
+		"/Users/demiantarasov/Documents/Arduino/libraries/StepperLib/src/StepperLib.h",
+		"/Users/demiantarasov/Documents/Arduino/libraries/StepperLib/src/StepperLib.cpp",
+		"/Users/demiantarasov/Downloads/BandGoblinovCode/src/mission_node/scripts/mission_node.py",
+		"/Users/demiantarasov/Downloads/bigtreetech-skr-pico-v1.0.cfg",
+		"/Users/demiantarasov/Downloads/config 2/printer.cfg",
+		"/Users/demiantarasov/Downloads/printer.cfg",
+		"/Users/demiantarasov/Downloads/macros_packprint.cfg",
+		"/Users/demiantarasov/Documents/Arduino/libraries/StepperLib/library.properties",
+		"/Users/demiantarasov/Documents/Arduino/libraries/U8g2/library.properties",
+		"/Users/demiantarasov/Documents/Arduino/libraries/StepperLib/keywords.txt",
+		"/Users/demiantarasov/Documents/Проекты ВСОШ робототехника/Рейка2026/Code/StepperLib/src/StepperLib.h",
+		"/Users/demiantarasov/Documents/Проекты ВСОШ робототехника/Рейка2026/Code/StepperLib/src/StepperLib.cpp",
+		"/Users/demiantarasov/Documents/Проекты ВСОШ робототехника/Рейка2026/StepperLib/src/StepperLib.h",
+		"/Users/demiantarasov/Documents/Проекты ВСОШ робототехника/Рейка2026/StepperLib/src/StepperLib.cpp",
+		"/Users/demiantarasov/Documents/Проекты ВСОШ робототехника/Рейка2026/StepperLib/src/StepperTypes.h",
+		"/Users/demiantarasov/Documents/Проекты ВСОШ робототехника/Рейка2026/StepperLib/StepperOptions.h",
+		"/Users/demiantarasov/Documents/Проекты ВСОШ робототехника/Рейка2026/StepperLib/main.h",
+		"/Users/demiantarasov/Downloads/prog.py",
+		"/Users/demiantarasov/Downloads/NTO-Banda-Goblinov/README.md",
+		"/Users/demiantarasov/Downloads/NTO-Banda-Goblinov/config/config.py",
+		"/Users/demiantarasov/Downloads/NTO-Banda-Goblinov/config/gen_tubes.py",
+		"/Users/demiantarasov/Downloads/NTO-Banda-Goblinov/drone/deps.py",
+		"/Users/demiantarasov/Downloads/NTO-Banda-Goblinov/front/static/js/index.js",
+		"/Users/demiantarasov/Downloads/NTO-Banda-Goblinov/front/templates/index.html",
+		"/Users/demiantarasov/Downloads/NTO-Banda-Goblinov/drone/functions.py",
+		"/Users/demiantarasov/Downloads/NTO-Banda-Goblinov/drone/main.py",
+		"/Users/demiantarasov/Downloads/NTO-Banda-Goblinov/front/main.py",
+		"/Users/demiantarasov/Downloads/NTO-Banda-Goblinov/drone/part.py",
+		"/Users/demiantarasov/Downloads/NTO-Banda-Goblinov/front/static/js/socket.io.js",
+		"/Users/demiantarasov/Downloads/solution.cpp",
+		"/Users/demiantarasov/Downloads/dano.py",
+		"/Users/demiantarasov/Downloads/dano.cpp",
+		"/Users/demiantarasov/Downloads/user_id.json",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/saves.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/main.py",
+		"/Users/demiantarasov/Downloads/user/pickme/lidar_data.jsonl",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/lidar_data.jsonl",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task2-main/controllers/udp_diff/udp_diff.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task2-main/solution/control.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task2-main/solution/main.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task2-main/controllers/udp_diff/main.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task2-main/protos/GeneratedMaze.proto",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task2-main/solution/functions.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task2-main/make_maze.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task3-main/demo.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task3-main/reveive example/receiver_rgbd.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task3-main/controllers/udp_diff/udp_diff.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task3-main/solution/requirements.txt",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task3-main/solution/docker-compose.yml",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task3-main/solution/Dockerfile",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task3-main/solution/README.md",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task3-main/solution/main.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task3-main/controllers/udp_diff/udp_diff1.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task3-main/solution/control.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task1-main/solution/functions.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task1-main/solution/main.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task1-main/solution/requirements.txt",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task1-main/solution/docker-compose.yml",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task1-main/solution/control.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task1-main/solution/visual.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task1-main/controllers/udp_diff/udp_diff.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task1-main/main1.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task1-main/solution/Dockerfile",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task1-main/main2.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task1-main/demo.py",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task1-main/Dockerfile",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task1-main/docker-compose.yml",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task1-main/requirements.txt",
+		"/Users/demiantarasov/Documents/TrueTechChamp2025/task1-main/main.py",
+		"/Users/demiantarasov/Documents/RocketGraph/graphs.py",
+		"/Users/demiantarasov/Documents/Проекты ВСОШ технология/Solar/Graphics/main.py",
+		"/Users/demiantarasov/Documents/Проекты ВСОШ технология/Solar/Graphics/sunPosition.cpp",
+		"/Applications/Arduino.app/Contents/Java/lib/formatter.conf",
+		"/Users/demiantarasov/Downloads/sirius.cpp",
+		"/Users/demiantarasov/Documents/site saves/chistmas/css/end.css",
+		"/Users/demiantarasov/Documents/site saves/chistmas/index.html",
+		"/Users/demiantarasov/Documents/Sun zenith/index.js",
+		"/Users/demiantarasov/Documents/Sun zenith/index.css",
+		"/Users/demiantarasov/Documents/Sun zenith/cards.json",
+		"/Users/demiantarasov/Documents/Sun zenith/index.html"
+	],
+	"find":
+	{
+		"height": 30.0
+	},
+	"find_in_files":
+	{
+		"height": 110.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 42.0
+	},
+	"input":
+	{
+		"height": 42.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.Debugger":
+	{
+		"height": 310.0,
+		"history":
+		[
+		]
+	},
+	"output.Debugger Console":
+	{
+		"height": 310.0,
+		"history":
+		[
+		]
+	},
+	"output.LSP Log Panel":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"output.SublimeLinter":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"output.diagnostics":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"output.find_results":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"output.mdpopups":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"pinned_build_system": "",
+	"project": "CU_repet_ai.sublime-project",
+	"replace":
+	{
+		"height": 56.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+		"lsp_show_inlay_hints": false
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 268.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
