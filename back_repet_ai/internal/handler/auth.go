@@ -15,10 +15,10 @@ type AuthHandler struct {
 	DB *postgres.Postgres
 }
 
-var jwtKey = []byte("your_secret_key") // В идеале брать из .env
+var jwtKey = []byte("repet_ai_secret_key")
 
 func (h *AuthHandler) Register(c *gin.Context) {
-	var req model.AuthRequest
+	var req model.RegRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
@@ -29,6 +29,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	user := model.User{
 		Login:        req.Login,
 		PasswordHash: string(hashedPassword),
+		Name: req.Name,
 	}
 
 	if err := h.DB.CreateUser(&user); err != nil {
@@ -69,3 +70,5 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		User:  *user,
 	})
 }
+
+

@@ -50,6 +50,13 @@ export default function SolveScreen() {
           {/*</View>*/}
         </View>
 
+        {hint ? (
+          <View style={styles.aiBox}>
+            <Text style={styles.aiTitle}>Совет от ИИ Репета:</Text>
+            <Text style={styles.aiText}>{hint}</Text>
+          </View>
+        ) : null}
+
         <TextInput 
           placeholder="Введите ответ" 
           placeholderTextColor="#94a3b8"
@@ -60,6 +67,7 @@ export default function SolveScreen() {
           onFocus={() => setIsAnswerFocused(true)}
           onBlur={() => setIsAnswerFocused(false)}
         />
+
 
         <TextInput 
           placeholder="Мои мысли и ход решения..." 
@@ -81,15 +89,10 @@ export default function SolveScreen() {
 
 
         <TouchableOpacity style={styles.btnHint} onPress={getAiHint}>
-          <Text style={[styles.btnText, {color: '#536175'}]}>Получить подсказку</Text>
+          <Ionicons name="sparkles" size={24} color='#536175' />
+          <Text style={[styles.btnText, {color: '#536175', paddingLeft: 10}]}>Получить подсказку</Text>
         </TouchableOpacity>
 
-        {hint ? (
-          <View style={styles.aiBox}>
-            <Text style={styles.aiTitle}>Совет от ИИ Репета:</Text>
-            <Text style={styles.aiText}>{hint}</Text>
-          </View>
-        ) : null}
       </ScrollView>
     </View>
   );
@@ -141,9 +144,9 @@ const styles = StyleSheet.create({
   },
 
   btnAnswer: { backgroundColor: '#6366f1', padding: 20, borderRadius: 18, alignItems: 'center' },
-  btnHint: {padding: 20, borderStyle: 'dashed', borderWidth: 2, borderColor: '#d1d1e1', borderRadius: 24, alignItems: 'center', marginTop: 10},
+  btnHint: {flexDirection: 'row', justifyContent: 'center', padding: 20, borderStyle: 'dashed', borderWidth: 2, borderColor: '#d1d1e1', borderRadius: 24, alignItems: 'center', marginTop: 10},
   btnText: { color: '#fff', fontWeight: '700', fontSize: 16 },
-  aiBox: { marginTop: 25, padding: 20, backgroundColor: '#f5f3ff', borderRadius: 24, borderLeftWidth: 5, borderLeftColor: '#8b5cf6', marginBottom: 30 },
+  aiBox: { marginTop: 0, padding: 20, backgroundColor: '#f5f3ff', borderRadius: 24, borderLeftWidth: 5, borderLeftColor: '#8b5cf6', marginBottom: 20 },
   aiTitle: { fontSize: 12, fontWeight: '800', color: '#8b5cf6', marginBottom: 5 },
   aiText: { color: '#4c1d95', lineHeight: 22 }
 });

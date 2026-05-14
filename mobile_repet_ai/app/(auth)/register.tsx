@@ -1,12 +1,59 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
-import { LogoImage } from '../../components/LogoImage'; 
 import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { useRouter } from 'expo-router';
+import { LogoImage } from '../../components/LogoImage';
 
-export default function LoginScreen() {
+export default function RegisterScreen() {
   const router = useRouter();
+  
+  // Состояния для полей
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  // Состояния фокуса
   const [isLoginFocused, setIsLoginFocused] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+  const [isNameFocused, setIsNameFocused] = useState(false);
+
+  const handleRegister = async () => {
+    if (!login || !password || !name) {
+      Alert.alert('Ошибка', 'Заполните все поля');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://172.20.10.9:8080/auth/register', { // Проверь эндпоинт на бэке
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          login: login,
+          password: password,
+          name: name
+        }),
+      });
+
+      if (response.ok) {
+        Alert.alert(
+          'Успех!', 
+          'Регистрация прошла успешно. Теперь войдите в свой аккаунт.',
+          [{ text: 'ОК', onPress: () => router.push('/(auth)') }]
+        );
+      } else {
+        const data = await response.json();
+        Alert.alert('Ошибка', data.message || 'Такой пользователь уже существует');
+      }
+    } catch (error) {
+      Alert.alert('Ошибка сети', 'Не удалось связаться с сервером');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -14,36 +61,57 @@ export default function LoginScreen() {
         <LogoImage size={150} />
       </View>
 
-      <Text style={styles.title}>Регистрация в <Text style={{ fontWeight: '900' }}>репет.<Text style={{ color: '#6366f1'}}>ai</Text></Text></Text>
-      <TextInput 
-        placeholder="Логин" 
+      <Text style={styles.title}>
+        Регистрация в <Text style={{ fontWeight: '900' }}>репет.<Text style={{ color: '#6366f1' }}>ai</Text></Text>
+      </Text>
+
+      <TextInput
+        placeholder="Ваше имя"
         placeholderTextColor="#94a3b8"
-        style={[
-          styles.input, 
-          isLoginFocused && styles.inputFocused
-        ]} 
-        onFocus={() => setIsLoginFocused(true)}
-        onBlur={() => setIsLoginFocused(false)}
-      />
-      <TextInput 
-        placeholder="Пороль" 
-        secureTextEntry 
-        placeholderTextColor="#94a3b8"
-        style={[
-          styles.input, 
-          isPasswordFocused && styles.inputFocused
-        ]} 
+        value={name}
+        onChangeText={setName}
+        style={[styles.input, isNameFocused && styles.inputFocused]}
         onFocus={() => setIsPasswordFocused(true)}
         onBlur={() => setIsPasswordFocused(false)}
       />
 
-      <TouchableOpacity style={styles.btn} onPress={() => router.navigate({ pathname: '/[subject]', params: { subject: 'OGE_MATH' } })}>
-        <Text style={styles.btnText}>Войти</Text>
+      <TextInput
+        placeholder="Придумайте логин"
+        placeholderTextColor="#94a3b8"
+        value={login}
+        onChangeText={setLogin}
+        autoCapitalize="none"
+        style={[styles.input, isLoginFocused && styles.inputFocused]}
+        onFocus={() => setIsLoginFocused(true)}
+        onBlur={() => setIsLoginFocused(false)}
+      />
+
+      <TextInput
+        placeholder="Придумайте пароль"
+        secureTextEntry
+        placeholderTextColor="#94a3b8"
+        value={password}
+        onChangeText={setPassword}
+        style={[styles.input, isPasswordFocused && styles.inputFocused]}
+        onFocus={() => setIsPasswordFocused(true)}
+        onBlur={() => setIsPasswordFocused(false)}
+      />
+
+      <TouchableOpacity 
+        style={[styles.btn, loading && { opacity: 0.7 }]} 
+        onPress={handleRegister}
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.btnText}>Зарегистрироваться</Text>
+        )}
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push('/(auth)')} style={{ marginTop: 20 }}>
         <Text style={styles.link}>
-          Есть аккаунта? <Text style={{ color: '#6366f1', fontWeight: 'bold' }}>Вход</Text>
+          Есть аккаунт? <Text style={{ color: '#6366f1', fontWeight: 'bold' }}>Вход</Text>
         </Text>
       </TouchableOpacity>
     </View>
@@ -51,21 +119,24 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  input: { 
+  container: { flex: 1, backgroundColor: '#fff', justifyContent: 'center', padding: 25 },
+  logoContainer: { alignSelf: 'center', marginBottom: 10 },
+  title: { fontSize: 26, textAlign: 'center', marginBottom: 30, color: '#0f172a' },
+  input: {
     backgroundColor: '#ffffff',
     borderWidth: 1.5,
     borderColor: '#e2e8f0',
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderRadius: 14,
-    fontSize: 16, 
+    fontSize: 16,
     color: '#0f172a',
     marginBottom: 16,
     shadowColor: '#0f172a',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.03,
     shadowRadius: 2,
-    elevation: 1, 
+    elevation: 1,
   },
   inputFocused: {
     borderColor: '#6366f1',
@@ -74,14 +145,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
-
-  container: { flex: 1, backgroundColor: '#fff', justifyContent: 'center', padding: 25 },
-  logoContainer: { 
-    alignSelf: 'center', 
-    marginBottom: 10,
-  },
-  title: { fontSize: 26, textAlign: 'center', marginBottom: 30, color: '#0f172a' },
-  // input: { backgroundColor: '#f8fafc', padding: 20, borderRadius: 22, marginBottom: 12, borderWidth: 1, borderColor: '#f1f5f9' },
   btn: { backgroundColor: '#6366f1', padding: 20, borderRadius: 22, alignItems: 'center', marginTop: 10 },
   btnText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
   link: { textAlign: 'center', color: '#64748b' }

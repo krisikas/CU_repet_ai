@@ -31,16 +31,24 @@ func main() {
 
 	// 2. Инициализация хендлеров
 	authHandler := &handler.AuthHandler{DB: db}
+	userHandler := &handler.UserHandler{DB: db}
+	topicHandler := &handler.TopicHandler{DB: db}
 
 	// 3. Настройка роутера
 	r := gin.Default()
 
 	// Эндпоинты для мобильного приложения
-	authGroup := r.Group("/auth")
-	{
-		authGroup.POST("/register", authHandler.Register)
-		authGroup.POST("/login", authHandler.Login)
-	}
+	r.POST("/auth/register", authHandler.Register)
+    r.POST("/auth/login", authHandler.Login)
+
+    // 2. Защищенные маршруты (нужен токен)
+    api := r.Group("/api")
+    api.Use(handler.AuthMiddleware()) // Применяем проверку токена ко всей группе
+    {
+        api.GET("/profile", userHandler.GetProfile)
+        api.GET("/topics", topicHandler.GetAvailableTopics)
+        // Сюда же потом добавишь api.POST("/submit", taskHandler.Submit)
+    }
 
 	// 4. Запуск сервера
 	port := os.Getenv("PORT")
