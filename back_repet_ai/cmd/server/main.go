@@ -6,8 +6,10 @@ import (
 	"os"
 	"github.com/joho/godotenv"
 	// "github.com/krisikas/CU_repet_ai/back_repet_ai/internal/ai"
+	"github.com/gin-gonic/gin"
 	"github.com/krisikas/CU_repet_ai/back_repet_ai/internal/postgres"
-	"github.com/krisikas/CU_repet_ai/back_repet_ai/internal/storage"
+	"github.com/krisikas/CU_repet_ai/back_repet_ai/internal/handler"
+	// "github.com/krisikas/CU_repet_ai/back_repet_ai/internal/storage"
 )
 
 func strPtr(s string) *string {
@@ -16,31 +18,65 @@ func strPtr(s string) *string {
 
 func main() {
 	_ = godotenv.Load() 
-	accessKey := os.Getenv("S3_ACCESS_KEY")
-	secretKey := os.Getenv("S3_SECRET_KEY")
-	bucketKey := os.Getenv("S3_BUCKET_NAME")
-
-	// folderID := os.Getenv("YANDEX_FOLDER_ID")
-	// agentID := os.Getenv("YANDEX_AGENT_ID")
-	// apiKey := os.Getenv("YANDEX_API_KEY")
 
 	dbHost := os.Getenv("POSTGRES_HOST")
 	dbUser := os.Getenv("POSTGRES_USER")
 	dbPassword := os.Getenv("POSTGRES_PASSWORD")
 	dbName := os.Getenv("POSTGRES_DBNAME")
 
-	db, err := posgres.NewDB(dbHost, dbUser, dbPassword, dbName)
-	if err != nil{
+	db, err := postgres.NewDB(dbHost, dbUser, dbPassword, dbName)
+	if err != nil {
 		log.Fatalf("Postgres db error: %v", err)
 	}
-	log.Println(db)
 
+	// 2. Инициализация хендлеров
+	authHandler := &handler.AuthHandler{DB: db}
 
-	clientS3, err := storage.NewS3Client(accessKey, secretKey, bucketKey)
-	if err != nil{
-		log.Fatalf("Postgres db error: %v", err)
+	// 3. Настройка роутера
+	r := gin.Default()
+
+	// Эндпоинты для мобильного приложения
+	authGroup := r.Group("/auth")
+	{
+		authGroup.POST("/register", authHandler.Register)
+		authGroup.POST("/login", authHandler.Login)
 	}
-	log.Println(clientS3)
+
+	// 4. Запуск сервера
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Printf("Server starting on port %s", port)
+	r.Run(":" + port)
+
+
+
+	// accessKey := os.Getenv("S3_ACCESS_KEY")
+	// secretKey := os.Getenv("S3_SECRET_KEY")
+	// bucketKey := os.Getenv("S3_BUCKET_NAME")
+
+	// // folderID := os.Getenv("YANDEX_FOLDER_ID")
+	// // agentID := os.Getenv("YANDEX_AGENT_ID")
+	// // apiKey := os.Getenv("YANDEX_API_KEY")
+
+	// dbHost := os.Getenv("POSTGRES_HOST")
+	// dbUser := os.Getenv("POSTGRES_USER")
+	// dbPassword := os.Getenv("POSTGRES_PASSWORD")
+	// dbName := os.Getenv("POSTGRES_DBNAME")
+
+	// db, err := posgres.NewDB(dbHost, dbUser, dbPassword, dbName)
+	// if err != nil{
+	// 	log.Fatalf("Postgres db error: %v", err)
+	// }
+	// log.Println(db)
+
+
+	// clientS3, err := storage.NewS3Client(accessKey, secretKey, bucketKey)
+	// if err != nil{
+	// 	log.Fatalf("Postgres db error: %v", err)
+	// }
+	// log.Println(clientS3)
 	// clientAi := ai.NewAgentClient(folderID, agentID, apiKey)
 
 	// ctx := context.Background()
