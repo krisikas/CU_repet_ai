@@ -6,11 +6,10 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack screenOptions={{ 
         headerShown: false,
-        animation: 'slide_from_right' // Красивая анимация перехода
+        animation: 'slide_from_right'
       }}>
         <Stack.Screen name="(auth)/index" />
         <Stack.Screen name="(drawer)" />
-        {/* Эти экраны открываются поверх Drawer */}
         <Stack.Screen name="solve" options={{ presentation: 'card' }} />
         <Stack.Screen name="test" options={{ presentation: 'card' }} />
       </Stack>
