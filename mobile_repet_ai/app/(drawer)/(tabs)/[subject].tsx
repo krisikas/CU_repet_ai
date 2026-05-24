@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { TaskCard } from '../../../components/UI';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function SubjectScreen() {
   const { subject = 'OGE_MATH' } = useLocalSearchParams<{ subject: string }>();
@@ -20,15 +21,13 @@ export default function SubjectScreen() {
 
   const currentSubjectName = subjectsMap[subject] || 'Предмет';
 
-  // Загрузка тем с бэкенда
   const fetchTopics = useCallback(async (isManualRefresh = false) => {
     if (isManualRefresh) setIsRefreshing(true);
     setLoading(true);
     try {
       const token = await SecureStore.getItemAsync('userToken');
       
-      // Формируем URL с префиксом предмета
-      const response = await fetch(`http://172.20.10.9:8080/api/topics?prefix=${subject}`, {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/topics?prefix=${subject}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -51,7 +50,7 @@ export default function SubjectScreen() {
       setLoading(false);
       setIsRefreshing(false);
     }
-  }, [subject]); // Перезапускаем, если сменился предмет
+  }, [subject]);
 
   useFocusEffect(
     useCallback(() => {
@@ -74,25 +73,57 @@ export default function SubjectScreen() {
       </View>
 
       <FlatList
-  data={topics}
-  keyExtractor={(item: any) => item.code}
-  renderItem={({ item }) => (
-    <TaskCard title={item.title} score={item.level} onAction={() => {}} />
-  )}
-  // Вот это исправляет "сползание":
-  contentContainerStyle={{ padding: 20, flexGrow: 1 }}
-  refreshControl={
-    <RefreshControl
-      refreshing={isRefreshing}
-      onRefresh={() => fetchTopics(true)}
-      tintColor="#6366f1" // Цвет для iOS
-      colors={["#6366f1"]} // Цвет для Android
-      progressViewOffset={0} // Важно: не дает смещать контент при инициализации
-    />
-  }
-  // Добавляем, чтобы список не дергался при загрузке
-  ListHeaderComponent={loading && topics.length === 0 ? <ActivityIndicator style={{ marginTop: 20 }} color="#6366f1" /> : null}
-/>
+        data={topics}
+        keyExtractor={(item: any) => item.code}
+        renderItem={({ item }) => (
+          <TaskCard 
+                  title={item.title} 
+                  score={item.level} // level с бэка используем как score
+                  onAction={() => router.push({
+                    pathname: '/solve',
+                    params: { 
+                      id: item.code, 
+                      title: item.title, 
+                      subjectName: currentSubjectName 
+                    }
+                  })} 
+                />
+        )}
+        contentContainerStyle={{ padding: 20, flexGrow: 1 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={() => fetchTopics(true)}
+            tintColor="#6366f1"
+            colors={["#6366f1"]}
+            progressViewOffset={0}
+          />
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Заданий пока нет</Text>
+          </View>
+        }
+        ListHeaderComponent={loading && topics.length === 0 ? <ActivityIndicator style={{ marginTop: 20 }} color="#6366f1" /> : null}
+      />
+        <TouchableOpacity 
+          style={styles.btnHint} 
+          onPress={() => router.push({
+                    pathname: '/test',
+                    // params: { 
+                    //   id: item.code, 
+                    //   title: item.title, 
+                    //   subjectName: currentSubjectName 
+                    // }
+                  })} 
+          // disabled={isSubmitting}
+        >
+          <>
+              <Ionicons name="sparkles" size={18} color='#6366f1' />
+              <Text style={[styles.btnText, { color: '#6366f1', marginLeft: 8 }]}>Нужна помощь</Text>
+            </>
+          
+        </TouchableOpacity>
     </View>
   );
 }

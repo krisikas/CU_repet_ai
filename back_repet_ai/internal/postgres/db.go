@@ -48,30 +48,33 @@ func (p *Postgres) UpdateLearningProgress(userID uint) (int, int, error) {
 		return 0, 0, err
 	}
 
-	now := time.Now()
-	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
-	lastAct := time.Date(user.LastActivityAt.Year(), user.LastActivityAt.Month(), user.LastActivityAt.Day(), 0, 0, 0, 0, user.LastActivityAt.Location())
+	now := time.Now().UTC()
+
+	todayStr := now.Format("2006-01-02")
+	lastActStr := user.LastActivityAt.UTC().Format("2006-01-02")
+
+	today, _ := time.Parse("2006-01-02", todayStr)
+	lastAct, _ := time.Parse("2006-01-02", lastActStr)
 
 	daysDiff := int(today.Sub(lastAct).Hours() / 24)
 
 	switch {
-	case daysDiff == 0 && user.CurrentStreak == 0:
-		user.CurrentStreak = 1
 	case daysDiff == 1:
 		user.CurrentStreak++
-	case daysDiff > 1:
+	case daysDiff > 1 || (daysDiff == 0 && user.CurrentStreak == 0):
 		user.CurrentStreak = 1
 	}
 
 	user.ExercisesCount++
-
 	user.LastActivityAt = now
-	if err := p.DB.Save(&user).Error; err != nil {
+
+	if err := p.DB.Model(&user).Select("CurrentStreak", "ExercisesCount", "LastActivityAt").Updates(&user).Error; err != nil {
 		return 0, 0, err
 	}
 
 	return user.CurrentStreak, user.ExercisesCount, nil
 }
+
 
 
 
@@ -86,4 +89,24 @@ func (p *Postgres) GetUserTopicsByPrefix(userID uint, prefix string) ([]model.To
 		Scan(&results).Error
 
 	return results, err
+}
+
+func (p *Postgres) GetRandomTaskByTopic(topicCode string) (*model.Task, error) {
+	var task model.Task
+	
+	err := p.DB.Where("topic_code = ?", topicCode).
+		Order("RANDOM()").
+		First(&task).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return &task, nil
+}
+
+
+func (p *Postgres) GetTaskByID(id uint) (*model.Task, error) {
+	var task model.Task
+	err := p.DB.First(&task, id).Error
+	return &task, err
 }

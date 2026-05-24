@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator, RefreshControl } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
@@ -9,21 +9,24 @@ export default function HomeScreen() {
   const [user, setUser] = useState<any>(null);
   const [profileData, setProfileData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   useFocusEffect(
     useCallback(() => {
       loadAllData();
+
+    console.log(process.env.EXPO_PUBLIC_API_URL);
     }, [])
   );
 
   const loadAllData = async () => {
-    setLoading(true);
+    setIsRefreshing(true);
     try {
       const localUser = await SecureStore.getItemAsync('userData');
       if (localUser) setUser(JSON.parse(localUser));
 
       const token = await SecureStore.getItemAsync('userToken');
       
-      const response = await fetch('http://172.20.10.9:8080/api/profile', {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/profile`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -36,11 +39,14 @@ export default function HomeScreen() {
         setProfileData(data);
       } else if (response.status === 401) {
         handleLogout();
+      } else{
+        console.error("Ошибка при получении:", response.status );
       }
     } catch (error) {
       console.error("Ошибка при загрузке профиля:", error);
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
   };
 
@@ -59,7 +65,15 @@ export default function HomeScreen() {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={() => loadAllData()}
+            tintColor="#6366f1"
+            colors={["#6366f1"]}
+            progressViewOffset={0}
+          />
+        }>
       <Text style={styles.welcomeText}>Добрый день!</Text>
       
       <View style={styles.userCard}>

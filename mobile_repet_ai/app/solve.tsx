@@ -1,28 +1,123 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { 
+  View, Text, TextInput, TouchableOpacity, StyleSheet, 
+  ScrollView, ActivityIndicator, Dimensions, Alert,
+  KeyboardAvoidingView, Platform, Keyboard 
+} from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Logo } from '../components/Logo'; 
-import React, { useState } from 'react';
-import { Image } from 'expo-image';
+import * as SecureStore from 'expo-secure-store';
 import AutoHeightImage from 'react-native-auto-height-image';
-import { Dimensions } from 'react-native';
+import { Logo } from '../components/Logo';
+import { MathText } from '../components/MathText';
 
 export default function SolveScreen() {
+  const router = useRouter();
+  const { id, title, subjectName } = useLocalSearchParams();
+  
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [task, setTask] = useState<any>(null);
+  const [answer, setAnswer] = useState('');
+  const [thoughts, setThoughts] = useState('');
+  
+  const [aiResponse, setAiResponse] = useState<string | null>(null);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [lastMode, setLastMode] = useState<'hint' | 'check' | null>(null); // Трекаем режим
+  
   const [isAnswerFocused, setIsAnswerFocused] = useState(false);
   const [isThoughtsFocused, setIsThoughtsFocused] = useState(false);
 
-  const router = useRouter();
-  const { id, title, subjectName} = useLocalSearchParams();
-  const [hint, setHint] = useState('');
-  
-  const getAiHint = () => {
-    setHint('Думаю...');
-    setTimeout(() => {
-      setHint('Вспомни, что sin(π/2 - x) = cos(x). Это поможет упростить уравнение!');
-    }, 1000);
+  const fetchRandomTask = useCallback(async () => {
+    setLoading(true);
+    setAiResponse(null);
+    setIsCorrect(null);
+    setLastMode(null);
+    setAnswer('');
+    setThoughts('');
+    
+    try {
+      const token = await SecureStore.getItemAsync('userToken');
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/tasks/random?topic=${id}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setTask(data);
+      } else {
+        Alert.alert("Упс!", "Задания этого типа закончились");
+        router.back();
+      }
+    } catch (error) {
+      Alert.alert("Ошибка", "Проблемы с подключением к серверу");
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchRandomTask();
+  }, [fetchRandomTask]);
+
+  const handleTaskSubmit = async (mode: 'hint' | 'check') => {
+    setAiResponse(null);
+    if (!answer.trim() && mode === 'check') {
+      Alert.alert("Внимание", "Сначала введи ответ");
+      return;
+    }
+
+    Keyboard.dismiss(); // Скрываем клавиатуру при отправке
+    setIsSubmitting(true);
+    setLastMode(mode);
+
+    try {
+      const token = await SecureStore.getItemAsync('userToken');
+      const response = await fetch(`${process.env.API_URL}/api/tasks/submit`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          task_id: task.task_id,
+          mode: mode,
+          student_answer: answer,
+          student_thoughts: thoughts,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setAiResponse(data.ai_response);
+        setIsCorrect(mode === 'check' ? data.is_correct : null);
+      }
+    } catch (error) {
+      Alert.alert("Ошибка", "Сервер не отвечает");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#6366f1" />
+      </View>
+    );
+  }
+
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1, backgroundColor: '#fff' }}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0} 
+    >
       <Stack.Screen options={{
         headerShown: true,
         headerLeft: () => (
@@ -31,122 +126,137 @@ export default function SolveScreen() {
           </TouchableOpacity>
         ),
         headerTitle: () => (
-          <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-            <Logo/>
-            <Text style={{ color: '#64748b', fontSize: 13}}>{subjectName} | {title}</Text>
+          <View style={{ alignItems: 'center' }}>
+            <Logo />
+            <Text style={{ color: '#64748b', fontSize: 11}} numberOfLines={1}>{subjectName} | {title}</Text>
           </View>
         )
       }} />
-      <ScrollView style={styles.container}>
+
+      <ScrollView 
+        style={styles.container} 
+        contentContainerStyle={{ paddingBottom: 40 }}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.taskCard}>
-          <Text style={styles.taskLabel}>ЗАДАНИЕ</Text>
-          <Text style={styles.taskText}>Решите уравнение: x² - 5x + 6 = 0</Text>
-          {/*<View style={styles.taskImageWrapper}>*/}
+          <Text style={styles.taskLabel}>ЗАДАНИЕ #{task?.task_id}</Text>
+          <MathText content={task?.content || ''} fontSize={18} />
+          
+          <View style={styles.imageContainer}>
             <AutoHeightImage
-              width={Dimensions.get('window').width * 0.7}
-              source={{ uri: "https://repet-ai-tasks.storage.yandexcloud.net/images.jpg" }}
-              style={styles.taskImage} 
+              width={Dimensions.get('window').width - 80}
+              source={{ uri: `https://repet-ai-tasks.storage.yandexcloud.net/${task.task_id}.png` }}
             />
-          {/*</View>*/}
+          </View>
         </View>
 
-        {hint ? (
-          <View style={styles.aiBox}>
-            <Text style={styles.aiTitle}>Совет от ИИ Репета:</Text>
-            <Text style={styles.aiText}>{hint}</Text>
+        {/* Блок ответа от ИИ с разным оформлением */}
+        {aiResponse && (
+          <View style={[
+            styles.aiBox, 
+            lastMode === 'hint' && styles.aiBoxHint,
+            isCorrect === true && styles.aiBoxCorrect,
+            isCorrect === false && styles.aiBoxWrong
+          ]}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+              <Ionicons 
+                name={lastMode === 'hint' ? "bulb-outline" : isCorrect ? "checkmark-circle" : "close-circle"} 
+                size={18} 
+                color={lastMode === 'hint' ? '#f59e0b' : isCorrect ? '#10b981' : '#ef4444'} 
+              />
+              <Text style={[
+                styles.aiTitle, 
+                lastMode === 'hint' && {color: '#f59e0b'},
+                isCorrect === true && {color: '#10b981'}, 
+                isCorrect === false && {color: '#ef4444'}
+              ]}>
+                {lastMode === 'hint' ? ' ПОДСКАЗКА' : isCorrect === true ? ' ПРАВИЛЬНО!' : ' ЕСТЬ ОШИБКА'}
+              </Text>
+            </View>
+            <MathText content={aiResponse} fontSize={16} color="#334155" />
           </View>
-        ) : null}
+        )}
 
         <TextInput 
-          placeholder="Введите ответ" 
-          placeholderTextColor="#94a3b8"
-          style={[
-            styles.input, 
-            isAnswerFocused && styles.inputFocused
-          ]} 
+          placeholder="Ответ" 
+          placeholderTextColor="#94a3b8" 
+          value={answer}
+          onChangeText={setAnswer}
+          style={[styles.input, isAnswerFocused && styles.inputFocused]} 
           onFocus={() => setIsAnswerFocused(true)}
           onBlur={() => setIsAnswerFocused(false)}
         />
 
-
         <TextInput 
-          placeholder="Мои мысли и ход решения..." 
-          placeholderTextColor="#94a3b8"
+          placeholder="Ход решения (необязательно)" 
+          placeholderTextColor="#94a3b8" 
           multiline 
+          value={thoughts}
+          onChangeText={setThoughts}
           textAlignVertical="top"
-          style={[
-            styles.input, 
-            styles.textArea, 
-            isThoughtsFocused && styles.inputFocused
-          ]} 
+          style={[styles.input, styles.textArea, isThoughtsFocused && styles.inputFocused]} 
           onFocus={() => setIsThoughtsFocused(true)}
           onBlur={() => setIsThoughtsFocused(false)}
         />
 
-        <TouchableOpacity style={styles.btnAnswer} onPress={getAiHint}>
-          <Text style={styles.btnText}>Ответить!</Text>
+        <TouchableOpacity 
+          style={styles.btnAnswer} 
+          onPress={() => handleTaskSubmit('check')}
+          disabled={isSubmitting}
+        >
+          {isSubmitting && lastMode === 'check' ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>Проверить</Text>}
         </TouchableOpacity>
 
-
-        <TouchableOpacity style={styles.btnHint} onPress={getAiHint}>
-          <Ionicons name="sparkles" size={24} color='#536175' />
-          <Text style={[styles.btnText, {color: '#536175', paddingLeft: 10}]}>Получить подсказку</Text>
+        <TouchableOpacity 
+          style={styles.btnHint} 
+          onPress={() => handleTaskSubmit('hint')}
+          disabled={isSubmitting}
+        >
+          {isSubmitting && lastMode === 'hint' ? <ActivityIndicator color="#6366f1" /> : (
+            <>
+              <Ionicons name="sparkles" size={18} color='#6366f1' />
+              <Text style={[styles.btnText, { color: '#6366f1', marginLeft: 8 }]}>Нужна помощь</Text>
+            </>
+          )}
         </TouchableOpacity>
-
+        
+        {isCorrect && (
+          <TouchableOpacity style={styles.btnNext} onPress={fetchRandomTask}>
+            <Text style={styles.btnText}>Следующая задача</Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  taskCard: { backgroundColor: '#f1f5f9', padding: 20, borderRadius: 20, marginBottom: 20 },
-  taskLabel: { fontSize: 10, fontWeight: 'bold', color: '#64748b', marginBottom: 5 },
-  taskText: { fontSize: 18, color: '#1e293b', fontWeight: '600' },
-  taskImageWrapper: { width: '80%', alignSelf: 'center', height: 'auto'},
-  taskImage: { 
-    alignSelf: 'left',
-    flex: 1,
-    width: '100%',
-    resizeMode: 'contain',
-  },
-  logoText: { fontSize: 16, fontWeight: '900' },
-  // taskText: { fontSize: 12, color: '#64748b', fontWeight: '500' },
-  // taskBox: { backgroundColor: '#f1f5f9', padding: 25, borderRadius: 24, minHeight: 200 },
-  container: { flex: 1, backgroundColor: '#fff', padding: 20},
-
-
+  loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  container: { flex: 1, padding: 20 },
+  taskCard: { backgroundColor: '#f8fafc', padding: 20, borderRadius: 20, marginBottom: 20, borderWidth: 1, borderColor: '#f1f5f9' },
+  taskLabel: { fontSize: 10, fontWeight: 'bold', color: '#94a3b8', marginBottom: 10 },
+  imageContainer: { marginTop: 15, alignSelf: 'center' },
+  
   input: { 
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fff',
     borderWidth: 1.5,
     borderColor: '#e2e8f0',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderRadius: 14,
+    padding: 16,
+    borderRadius: 16,
     fontSize: 16, 
-    color: '#0f172a',
-    marginBottom: 16,
-    shadowColor: '#0f172a',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
-    shadowRadius: 2,
-    elevation: 1, 
+    marginBottom: 12,
   },
-  textArea: {
-    height: 120,
-    paddingTop: 14, 
-  },
-  inputFocused: {
-    borderColor: '#6366f1',
-    backgroundColor: '#f8fafc',
-    shadowColor: '#6366f1',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
+  textArea: { height: 100 },
+  inputFocused: { borderColor: '#6366f1' },
+  
+  btnAnswer: { backgroundColor: '#6366f1', padding: 18, borderRadius: 16, alignItems: 'center' },
+  btnHint: { flexDirection: 'row', justifyContent: 'center', padding: 16, marginTop: 12, borderRadius: 16, borderWidth: 1, borderColor: '#e2e8f0' },
+  btnNext: { backgroundColor: '#10b981', padding: 18, borderRadius: 16, alignItems: 'center', marginTop: 20 },
+  btnText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
 
-  btnAnswer: { backgroundColor: '#6366f1', padding: 20, borderRadius: 18, alignItems: 'center' },
-  btnHint: {flexDirection: 'row', justifyContent: 'center', padding: 20, borderStyle: 'dashed', borderWidth: 2, borderColor: '#d1d1e1', borderRadius: 24, alignItems: 'center', marginTop: 10},
-  btnText: { color: '#fff', fontWeight: '700', fontSize: 16 },
-  aiBox: { marginTop: 0, padding: 20, backgroundColor: '#f5f3ff', borderRadius: 24, borderLeftWidth: 5, borderLeftColor: '#8b5cf6', marginBottom: 20 },
-  aiTitle: { fontSize: 12, fontWeight: '800', color: '#8b5cf6', marginBottom: 5 },
-  aiText: { color: '#4c1d95', lineHeight: 22 }
+  aiBox: { padding: 18, borderRadius: 18, marginBottom: 20, borderLeftWidth: 4 },
+  aiBoxHint: { backgroundColor: '#fffbeb', borderLeftColor: '#f59e0b' }, // Теплый желтый для подсказки
+  aiBoxCorrect: { backgroundColor: '#f0fdf4', borderLeftColor: '#10b981' }, // Зеленый
+  aiBoxWrong: { backgroundColor: '#fef2f2', borderLeftColor: '#ef4444' }, // Красный
+  aiTitle: { fontSize: 12, fontWeight: 'bold' },
 });

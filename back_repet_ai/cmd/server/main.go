@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 	"github.com/joho/godotenv"
-	// "github.com/krisikas/CU_repet_ai/back_repet_ai/internal/ai"
+	"github.com/krisikas/CU_repet_ai/back_repet_ai/internal/ai"
 	"github.com/gin-gonic/gin"
 	"github.com/krisikas/CU_repet_ai/back_repet_ai/internal/postgres"
 	"github.com/krisikas/CU_repet_ai/back_repet_ai/internal/handler"
@@ -19,20 +19,31 @@ func strPtr(s string) *string {
 func main() {
 	_ = godotenv.Load() 
 
+	folderID := os.Getenv("YANDEX_FOLDER_ID")
+	agentID := os.Getenv("YANDEX_AGENT_ID")
+	apiKey := os.Getenv("YANDEX_API_KEY")
+
 	dbHost := os.Getenv("POSTGRES_HOST")
 	dbUser := os.Getenv("POSTGRES_USER")
 	dbPassword := os.Getenv("POSTGRES_PASSWORD")
 	dbName := os.Getenv("POSTGRES_DBNAME")
+
 
 	db, err := postgres.NewDB(dbHost, dbUser, dbPassword, dbName)
 	if err != nil {
 		log.Fatalf("Postgres db error: %v", err)
 	}
 
+
+	clientAi := ai.NewAgentClient(folderID, agentID, apiKey)
 	// 2. Инициализация хендлеров
 	authHandler := &handler.AuthHandler{DB: db}
 	userHandler := &handler.UserHandler{DB: db}
 	topicHandler := &handler.TopicHandler{DB: db}
+	taskHandler := &handler.TaskHandler{
+	    DB: db,
+	    AI: clientAi,
+	}
 
 	// 3. Настройка роутера
 	r := gin.Default()
@@ -47,6 +58,8 @@ func main() {
     {
         api.GET("/profile", userHandler.GetProfile)
         api.GET("/topics", topicHandler.GetAvailableTopics)
+        api.GET("/tasks/random", taskHandler.GetRandomTask)
+        api.POST("/tasks/submit", taskHandler.SubmitTask)
         // Сюда же потом добавишь api.POST("/submit", taskHandler.Submit)
     }
 

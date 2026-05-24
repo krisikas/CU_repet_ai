@@ -26,7 +26,7 @@ export default function RegisterScreen() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://172.20.10.9:8080/auth/register', { // Проверь эндпоинт на бэке
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/auth/register`, { // Проверь эндпоинт на бэке
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

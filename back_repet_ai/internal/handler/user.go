@@ -18,7 +18,7 @@ func (h *UserHandler) GetProfile(c *gin.Context) {
 	// 1. Извлекаем ID пользователя, который Middleware заботливо положил в контекст
 	val, exists := c.Get("user_id")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User context missing"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "User context missing"})
 		return
 	}
 	userID := val.(uint)

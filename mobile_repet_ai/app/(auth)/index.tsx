@@ -7,12 +7,10 @@ import { LogoImage } from '../../components/LogoImage';
 export default function LoginScreen() {
   const router = useRouter();
   
-  // Состояния для полей
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Состояния фокуса для UI
   const [isLoginFocused, setIsLoginFocused] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
@@ -25,7 +23,7 @@ export default function LoginScreen() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://172.20.10.9:8080/auth/login', {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,12 +37,9 @@ export default function LoginScreen() {
       const data = await response.json();
 
       if (response.ok) {
-        // Храним токен в защищенном хранилище
         await SecureStore.setItemAsync('userToken', data.token);
-        // Также можно сохранить инфо о пользователе (но лучше через контекст/Zustand)
         await SecureStore.setItemAsync('userData', JSON.stringify(data.user));
 
-        // Переходим в приложение (заменяем историю, чтобы нельзя было вернуться назад)
         router.replace({ pathname: '/(drawer)/home'});
       } else {
         Alert.alert('Ошибка', data.message || 'Неверный логин или пароль');
