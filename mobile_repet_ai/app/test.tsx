@@ -100,14 +100,14 @@ export default function TestScreen() {
     setIsSubmitting(true);
 
     const payloadAnswers = tasks.map(t => ({
-      task_id: t.task_id,
+      task_id: t.task_code,
       student_answer: answersStore[t.task_id]?.answer || '',
       student_thoughts: answersStore[t.task_id]?.thoughts || ''
     }));
 
     try {
       const token = await SecureStore.getItemAsync('userToken');
-      const response = await fetch(`http://172.20.10.9:8080/api/test/submit`, {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/test/submit`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -237,7 +237,7 @@ export default function TestScreen() {
             <TouchableOpacity 
               style={[styles.btnAnswer, { flex: 1, marginTop: 0 }]} 
               onPress={handleFinishTest}
-              disabled={isSubmitting}
+              // disabled={isSubmitting}
             >
               {isSubmitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>Завершить тест</Text>}
             </TouchableOpacity>

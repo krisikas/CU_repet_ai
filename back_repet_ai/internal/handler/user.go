@@ -9,13 +9,11 @@ import (
 	"github.com/krisikas/CU_repet_ai/back_repet_ai/internal/model"
 )
 
-// UserHandler будет отвечать за профиль и статистику
 type UserHandler struct {
-	DB *postgres.Postgres // Используем твой структуру обертки над БД
+	DB *postgres.Postgres
 }
 
 func (h *UserHandler) GetProfile(c *gin.Context) {
-	// 1. Извлекаем ID пользователя, который Middleware заботливо положил в контекст
 	val, exists := c.Get("user_id")
 	if !exists {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "User context missing"})

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-resty/resty/v2"
+	"github.com/krisikas/CU_repet_ai/back_repet_ai/internal/model"
 )
 
 type TopicAssessment struct {
@@ -164,3 +165,61 @@ func (c *AgentClient) CheckAnswer(ctx context.Context, taskText, taskAnswer, stu
 	return &result, nil
 }
 
+
+// GetTestAnalysis отправляет массив решений ученика для комплексной оценки
+func (c *AgentClient) GetTestAnalysis(ctx context.Context, fullTestData string) (*model.TestAIResponse, error) {
+	
+	// Формируем сообщение для агента. 
+	// Мы явно указываем mode: test, чтобы сработал нужный блок твоего системного промпта.
+	prompt := fmt.Sprintf("{\"mode\": \"test\", \"data\": \"%s\"}", fullTestData)
+
+	url := "https://ai.api.cloud.yandex.net/v1/responses"
+
+	payload := map[string]interface{}{
+		"prompt": map[string]string{
+			"id": c.agentID,
+		},
+		"input": prompt,
+	}
+
+	resp, err := c.httpClient.R().
+		SetContext(ctx).
+		SetHeader("Content-Type", "application/json").
+		SetHeader("Authorization", "Api-Key "+c.apiKey).
+		SetHeader("x-folder-id", c.folderID).
+		SetBody(payload).
+		Post(url)
+
+	if err != nil {
+		return nil, fmt.Errorf("network error: %w", err)
+	}
+
+	if resp.IsError() {
+		return nil, fmt.Errorf("yandex api error (status %d): %s", resp.StatusCode(), resp.String())
+	}
+
+	var wrapper struct {
+		Output []struct {
+			Content []struct {
+				Text string `json:"text"`
+			} `json:"content"`
+		} `json:"output"`
+	}
+
+	if err := json.Unmarshal(resp.Body(), &wrapper); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal yandex response: %w", err)
+	}
+
+	if len(wrapper.Output) == 0 || len(wrapper.Output[0].Content) == 0 {
+		return nil, fmt.Errorf("ai returned empty content")
+	}
+
+	aiRawJSON := wrapper.Output[0].Content[0].Text
+
+	var result model.TestAIResponse
+	if err := json.Unmarshal([]byte(aiRawJSON), &result); err != nil {
+		return nil, fmt.Errorf("failed to parse AI business logic: %w. Raw text: %s", err, aiRawJSON)
+	}
+
+	return &result, nil
+}

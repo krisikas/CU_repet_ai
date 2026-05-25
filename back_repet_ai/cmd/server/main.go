@@ -36,7 +36,7 @@ func main() {
 
 
 	clientAi := ai.NewAgentClient(folderID, agentID, apiKey)
-	// 2. Инициализация хендлеров
+
 	authHandler := &handler.AuthHandler{DB: db}
 	userHandler := &handler.UserHandler{DB: db}
 	topicHandler := &handler.TopicHandler{DB: db}
@@ -45,25 +45,23 @@ func main() {
 	    AI: clientAi,
 	}
 
-	// 3. Настройка роутера
 	r := gin.Default()
 
-	// Эндпоинты для мобильного приложения
 	r.POST("/auth/register", authHandler.Register)
     r.POST("/auth/login", authHandler.Login)
 
-    // 2. Защищенные маршруты (нужен токен)
     api := r.Group("/api")
-    api.Use(handler.AuthMiddleware()) // Применяем проверку токена ко всей группе
+    api.Use(handler.AuthMiddleware()) 
     {
         api.GET("/profile", userHandler.GetProfile)
         api.GET("/topics", topicHandler.GetAvailableTopics)
         api.GET("/tasks/random", taskHandler.GetRandomTask)
         api.POST("/tasks/submit", taskHandler.SubmitTask)
-        // Сюда же потом добавишь api.POST("/submit", taskHandler.Submit)
+        api.GET("/test/start", taskHandler.StartTest)
+    
+    api.POST("/test/submit", taskHandler.SubmitFullTest)
     }
 
-	// 4. Запуск сервера
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"

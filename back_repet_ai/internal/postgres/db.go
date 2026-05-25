@@ -110,3 +110,22 @@ func (p *Postgres) GetTaskByID(id uint) (*model.Task, error) {
 	err := p.DB.First(&task, id).Error
 	return &task, err
 }
+
+func (p *Postgres) UpdateTopicProgress(userID uint, topicCode string, newLevel float64) error {
+	return p.DB.Exec(`
+		INSERT INTO user_progress (user_id, topic_code, level, updated_at)
+		VALUES (?, ?, ?, NOW())
+		ON CONFLICT (user_id, topic_code)
+		DO UPDATE SET level = EXCLUDED.level, updated_at = NOW()`,
+		userID, topicCode, newLevel).Error
+}
+func (p *Postgres) GetTasksBySubject(subjectPrefix string, limit int) ([]model.Task, error) {
+	var tasks []model.Task
+	
+	err := p.DB.Where("topic_code LIKE ?", subjectPrefix+"%").
+		Order("RANDOM()").
+		Limit(limit).
+		Find(&tasks).Error
+
+	return tasks, err
+}
