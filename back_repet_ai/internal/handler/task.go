@@ -1,11 +1,13 @@
 package handler
 
 import (
+	"log"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
-	"github.com/krisikas/CU_repet_ai/back_repet_ai/internal/postgres"
 	"github.com/krisikas/CU_repet_ai/back_repet_ai/internal/ai"
 	"github.com/krisikas/CU_repet_ai/back_repet_ai/internal/model"
+	"github.com/krisikas/CU_repet_ai/back_repet_ai/internal/postgres"
 )
 
 type TaskHandler struct {
@@ -38,8 +40,8 @@ func (h *TaskHandler) GetRandomTask(c *gin.Context) {
 
 func (h *TaskHandler) SubmitTask(c *gin.Context) {
 	userID, _ := c.Get("user_id")
-		h.DB.UpdateLearningProgress(userID.(uint))
-		return
+
+
 	var req model.SubmitTaskRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -72,7 +74,7 @@ func (h *TaskHandler) SubmitTask(c *gin.Context) {
 	if aiRes.CorrectAnswer {
 		h.DB.UpdateLearningProgress(userID.(uint))
 	}
-
+	log.Println(aiRes.TextForStudent, aiRes.CorrectAnswer)
 	c.JSON(http.StatusOK, gin.H{
 		"mode":            aiRes.Mode,
 		"ai_response":     aiRes.TextForStudent,

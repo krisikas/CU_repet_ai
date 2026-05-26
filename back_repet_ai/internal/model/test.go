@@ -2,6 +2,7 @@ package model
 
 type TestAnswer struct {
 	TaskID          uint   `json:"task_id"`
+	TaskCode          string   `json:"task_code"`
 	StudentAnswer   string `json:"student_answer"`
 	StudentThoughts string `json:"student_thoughts"`
 }

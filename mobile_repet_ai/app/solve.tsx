@@ -77,7 +77,7 @@ export default function SolveScreen() {
 
     try {
       const token = await SecureStore.getItemAsync('userToken');
-      const response = await fetch(`${process.env.API_URL}/api/tasks/submit`, {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/tasks/submit`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -90,15 +90,16 @@ export default function SolveScreen() {
           student_thoughts: thoughts,
         }),
       });
-
-      const data = await response.json();
+      // console.log(response.text())
 
       if (response.ok) {
+        const data = await response.json();
         setAiResponse(data.ai_response);
         setIsCorrect(mode === 'check' ? data.is_correct : null);
       }
     } catch (error) {
       Alert.alert("Ошибка", "Сервер не отвечает");
+      console.log(error, `${process.env.API_URL}/api/tasks/submit`)
     } finally {
       setIsSubmitting(false);
     }

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"log"
 	"time"
 	"net/http"
 	"github.com/gin-gonic/gin"
@@ -16,9 +17,14 @@ func (h *TaskHandler) StartTest(c *gin.Context) {
 		return
 	}
 
-	tasks, err := h.DB.GetTasksBySubject(subject, 5)
-	if err != nil || len(tasks) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Задачи по этому предмету не найдены"})
+	tasks, err := h.DB.GetOneTaskPerTopic(subject)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка базы данных"})
+		return
+	}
+
+	if len(tasks) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Задачи не найдены. Проверь базу!"})
 		return
 	}
 
@@ -37,17 +43,17 @@ func (h *TaskHandler) StartTest(c *gin.Context) {
 		})
 	}
 
-	testID := int(time.Now().Unix())
-
 	c.JSON(http.StatusOK, gin.H{
-		"test_id": testID,
+		"test_id": int(time.Now().Unix()),
 		"tasks":   responseTasks,
 	})
 }
+
 func (h *TaskHandler) SubmitFullTest(c *gin.Context) {
 	userID, _ := c.Get("user_id")
 	var req model.TestSubmitRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		fmt.Println(err, req)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
 		return
 	}
@@ -57,7 +63,7 @@ func (h *TaskHandler) SubmitFullTest(c *gin.Context) {
 		task, _ := h.DB.GetTaskByID(ans.TaskID)
 		fullPromptData += fmt.Sprintf(
 			"\n ID: %d\nContent: %s\nCorrect: %s\nStudent: %s\nThoughts: %s\n---",
-			ans.TaskID, task.Content, task.CorrectAnswer, ans.StudentAnswer, ans.StudentThoughts,
+			ans.TaskCode, task.Content, task.CorrectAnswer, ans.StudentAnswer, ans.StudentThoughts,
 		)
 	}
 	fmt.Println(fullPromptData)
@@ -69,10 +75,14 @@ func (h *TaskHandler) SubmitFullTest(c *gin.Context) {
 	}
 
 	for _, res := range aiRes.Assessment {
-		_ = h.DB.UpdateTopicProgress(userID.(uint), res.TopicCode, res.Level)
-		if res.IsCorrect {
-			_, _, _ = h.DB.UpdateLearningProgress(userID.(uint))
-		}
+	    err := h.DB.UpdateTopicProgress(userID.(uint), res.TopicCode, res.Level)
+	    if err != nil {
+	        log.Printf("Ошибка обновления прогресса для темы %s: %v", res.TopicCode, err)
+	    }
+
+	    if res.IsCorrect {
+	        _, _, _ = h.DB.UpdateLearningProgress(userID.(uint))
+	    }
 	}
 
 	c.JSON(http.StatusOK, aiRes)

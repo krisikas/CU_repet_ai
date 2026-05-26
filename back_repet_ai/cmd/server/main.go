@@ -44,6 +44,7 @@ func main() {
 	    DB: db,
 	    AI: clientAi,
 	}
+	chatHandler := &handler.ChatHandler{DB: db, AI: clientAi}
 
 	r := gin.Default()
 
@@ -58,6 +59,7 @@ func main() {
         api.GET("/tasks/random", taskHandler.GetRandomTask)
         api.POST("/tasks/submit", taskHandler.SubmitTask)
         api.GET("/test/start", taskHandler.StartTest)
+        api.POST("/chat/send", chatHandler.SendChatMessage)
     
     api.POST("/test/submit", taskHandler.SubmitFullTest)
     }

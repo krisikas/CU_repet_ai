@@ -120,7 +120,7 @@ export default function SubjectScreen() {
         >
           <>
               <Ionicons name="sparkles" size={18} color='#6366f1' />
-              <Text style={[styles.btnText, { color: '#6366f1', marginLeft: 8 }]}>Нужна помощь</Text>
+              <Text style={[styles.btnText, { color: '#6366f1', marginLeft: 8 }]}>Пройти тест</Text>
             </>
           
         </TouchableOpacity>
@@ -145,5 +145,12 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5 
   },
   emptyContainer: { flex: 1, alignItems: 'center', marginTop: 50 },
-  emptyText: { color: '#94a3b8', fontSize: 16 }
+  emptyText: { color: '#94a3b8', fontSize: 16 },
+
+
+  btnAnswer: { backgroundColor: '#6366f1', padding: 18, borderRadius: 16, alignItems: 'center' },
+  btnHint: { flexDirection: 'row', justifyContent: 'center', padding: 16, marginTop: 12, borderRadius: 16, borderWidth: 1, borderColor: '#e2e8f0' },
+  btnNext: { backgroundColor: '#10b981', padding: 18, borderRadius: 16, alignItems: 'center', marginTop: 20 },
+  btnText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+
 });

@@ -166,11 +166,8 @@ func (c *AgentClient) CheckAnswer(ctx context.Context, taskText, taskAnswer, stu
 }
 
 
-// GetTestAnalysis отправляет массив решений ученика для комплексной оценки
 func (c *AgentClient) GetTestAnalysis(ctx context.Context, fullTestData string) (*model.TestAIResponse, error) {
-	
-	// Формируем сообщение для агента. 
-	// Мы явно указываем mode: test, чтобы сработал нужный блок твоего системного промпта.
+
 	prompt := fmt.Sprintf("{\"mode\": \"test\", \"data\": \"%s\"}", fullTestData)
 
 	url := "https://ai.api.cloud.yandex.net/v1/responses"
@@ -216,6 +213,7 @@ func (c *AgentClient) GetTestAnalysis(ctx context.Context, fullTestData string) 
 
 	aiRawJSON := wrapper.Output[0].Content[0].Text
 
+	fmt.Println(aiRawJSON)
 	var result model.TestAIResponse
 	if err := json.Unmarshal([]byte(aiRawJSON), &result); err != nil {
 		return nil, fmt.Errorf("failed to parse AI business logic: %w. Raw text: %s", err, aiRawJSON)

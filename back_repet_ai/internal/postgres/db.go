@@ -43,6 +43,7 @@ func (p *Postgres) GetUserByLogin(login string) (*model.User, error) {
 }
 
 func (p *Postgres) UpdateLearningProgress(userID uint) (int, int, error) {
+	fmt.Println("updare")
 	var user model.User
 	if err := p.DB.First(&user, userID).Error; err != nil {
 		return 0, 0, err
@@ -65,7 +66,7 @@ func (p *Postgres) UpdateLearningProgress(userID uint) (int, int, error) {
 		user.CurrentStreak = 1
 	}
 
-	user.ExercisesCount++
+	user.ExercisesCount += 1
 	user.LastActivityAt = now
 
 	if err := p.DB.Model(&user).Select("CurrentStreak", "ExercisesCount", "LastActivityAt").Updates(&user).Error; err != nil {
@@ -112,20 +113,35 @@ func (p *Postgres) GetTaskByID(id uint) (*model.Task, error) {
 }
 
 func (p *Postgres) UpdateTopicProgress(userID uint, topicCode string, newLevel float64) error {
-	return p.DB.Exec(`
+	query := `
 		INSERT INTO user_progress (user_id, topic_code, level, updated_at)
 		VALUES (?, ?, ?, NOW())
 		ON CONFLICT (user_id, topic_code)
-		DO UPDATE SET level = EXCLUDED.level, updated_at = NOW()`,
-		userID, topicCode, newLevel).Error
+		DO UPDATE SET 
+			level = EXCLUDED.level, 
+			updated_at = NOW();
+	`
+	return p.DB.Exec(query, userID, topicCode, newLevel).Error
 }
-func (p *Postgres) GetTasksBySubject(subjectPrefix string, limit int) ([]model.Task, error) {
+func (p *Postgres) GetOneTaskPerTopic(subjectPrefix string) ([]model.Task, error) {
 	var tasks []model.Task
-	
-	err := p.DB.Where("topic_code LIKE ?", subjectPrefix+"%").
-		Order("RANDOM()").
-		Limit(limit).
-		Find(&tasks).Error
 
+	query := `
+		SELECT id, topic_code, content, correct_answer 
+		FROM (
+			SELECT *, ROW_NUMBER() OVER (PARTITION BY topic_code ORDER BY RANDOM()) as rn
+			FROM tasks
+			WHERE topic_code LIKE ?
+		) t
+		WHERE rn = 1
+	`
+
+	err := p.DB.Raw(query, subjectPrefix+"%").Scan(&tasks).Error
 	return tasks, err
+}
+
+func (p *Postgres) GetTopicTitle(code string) (string, error) {
+	var title string
+	err := p.DB.Table("topics").Select("title").Where("code = ?", code).Row().Scan(&title)
+	return title, err
 }

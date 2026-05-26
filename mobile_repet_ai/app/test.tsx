@@ -13,7 +13,7 @@ import { MathText } from '../components/MathText';
 
 interface Task {
   task_id: number;
-  topic: string;
+  topic_code: string;
   content: string;
 }
 
@@ -100,11 +100,13 @@ export default function TestScreen() {
     setIsSubmitting(true);
 
     const payloadAnswers = tasks.map(t => ({
-      task_id: t.task_code,
+      task_id: t.task_id,
+      task_code: t.topic_code,
       student_answer: answersStore[t.task_id]?.answer || '',
       student_thoughts: answersStore[t.task_id]?.thoughts || ''
     }));
-
+    console.log(payloadAnswers)
+    console.log(tasks)
     try {
       const token = await SecureStore.getItemAsync('userToken');
       const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/test/submit`, {
@@ -121,7 +123,7 @@ export default function TestScreen() {
 
       const data = await response.json();
       if (response.ok) {
-        setTestResult(data); // Переключает экран на показ результатов
+        setTestResult(data);
       } else {
         Alert.alert("Ошибка", "Не удалось отправить тест на проверку");
       }
@@ -143,26 +145,94 @@ export default function TestScreen() {
   }
 
   if (testResult) {
+
+    const correctCount = testResult.assessment?.filter((item: any) => item.is_correct).length || 0;
+    const totalCount = testResult.assessment?.length || 0;
+
+    const formatTopicName = (code: string) => {
+      if (!code) return 'Неизвестная тема';
+      return code.replace('OGE_MATH_', 'Задание №').replace('OGE_RUSS_', 'Задание №');
+    };
+
+    const getLevelColor = (level: number) => {
+      if (level >= 0.7) return '#10b981'; 
+      if (level >= 0.4) return '#f59e0b'; 
+      return '#ef4444'; 
+    };
+
     return (
-      <View style={{ flex: 1, backgroundColor: '#fff', padding: 20 }}>
-        <Stack.Screen options={{ headerTitle: "Результаты теста", headerLeft: () => null }} />
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: 20, paddingBottom: 40 }}>
-          <View style={styles.resultHeader}>
-            <Ionicons name="trophy" size={48} color="#f59e0b" />
-            <Text style={styles.resultScore}>{testResult.score} из {testResult.total}</Text>
-            <Text style={styles.resultSub}>Правильных ответов</Text>
+      <View style={{ flex: 1, backgroundColor: '#fff' }}>
+        <Stack.Screen options={{ 
+          headerTitle: "Анализ тестирования", 
+        }} />
+        
+        <ScrollView 
+          showsVerticalScrollIndicator={false} 
+          contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+        >
+          <View style={styles.resultHeaderCard}>
+            <View style={styles.trophyBadge}>
+              <Ionicons name="trophy" size={32} color="#fff" />
+            </View>
+            <Text style={styles.resultScore}>{correctCount} из {totalCount}</Text>
+            <Text style={styles.resultSub}>заданий решено верно</Text>
           </View>
 
           <View style={styles.aiReportBox}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
               <Ionicons name="sparkles" size={20} color="#8b5cf6" />
-              <Text style={styles.aiReportTitle}> ДИАГНОСТИЧЕСКИЙ ОТЧЕТ ИИ:</Text>
+              <Text style={styles.aiReportTitle}> ВЕРДИКТ НАСТАВНИКА</Text>
             </View>
-            <MathText content={testResult.ai_report} fontSize={16} color="#4c1d95" />
+            <MathText 
+              content={testResult.overall_summary || 'ИИ не смог составить отчет.'} 
+              fontSize={15} 
+              color="#4c1d95" 
+            />
           </View>
 
-          <TouchableOpacity style={styles.btnAnswer} onPress={() => router.replace('/(tabs)/catalog')}>
-            <Text style={styles.btnText}>Вернуться в каталог</Text>
+          <Text style={styles.sectionTitle}>Результаты по темам:</Text>
+          
+          {testResult.assessment && testResult.assessment.map((item: any, index: number) => {
+            const pct = Math.round((item.level || 0) * 100);
+            return (
+              <View key={index} style={styles.topicRowCard}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, gap: 12 }}>
+                  {/* Иконка правильности */}
+                  <View style={[
+                    styles.statusIconCircle, 
+                    { backgroundColor: item.is_correct ? '#e6f4ea' : '#fce8e6' }
+                  ]}>
+                    <Ionicons 
+                      name={item.is_correct ? "checkmark-circle" : "close-circle"} 
+                      size={24} 
+                      color={item.is_correct ? "#137333" : "#c5221f"} 
+                    />
+                  </View>
+                  
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.topicCodeText}>{formatTopicName(item.topic_code)}</Text>
+                    <Text style={styles.topicStatusText}>
+                      {item.is_correct ? 'Ответ верный' : 'Требует разбора'}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={[styles.levelBadge, { backgroundColor: getLevelColor(item.level) + '15' }]}>
+                  <Text style={[styles.levelBadgeText, { color: getLevelColor(item.level) }]}>
+                    Уровень: {pct/3}%
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
+
+          {/* Кнопка возврата в каталог */}
+          <TouchableOpacity 
+            style={styles.btnReturn} 
+            onPress={() => router.replace('/(drawer)/(tabs)/[subject]')}
+          >
+            <Text style={styles.btnReturnText}>Изучить слабые темы</Text>
+            <Ionicons name="arrow-forward" size={18} color="#fff" />
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -177,6 +247,11 @@ export default function TestScreen() {
     >
       <Stack.Screen options={{
         headerShown: true,
+        headerLeft: () => (
+          <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 15 }}>
+            <Ionicons name="chevron-back" size={28} color="#6366f1" />
+          </TouchableOpacity>
+        ),
         headerTitle: () => (
           <View style={{ alignItems: 'center' }}>
             <Logo />
@@ -208,7 +283,8 @@ export default function TestScreen() {
         </View>
 
         <TextInput 
-          placeholder="Ваш ответ" 
+          placeholder="Ваш ответ"
+          placeholderTextColor="#94a3b8"  
           value={currentAnswer}
           onChangeText={(val) => handleInputChange('answer', val)}
           style={styles.input} 
@@ -217,6 +293,7 @@ export default function TestScreen() {
         <TextInput 
           placeholder="Ход решения (ИИ учтет это при анализе ошибок)" 
           multiline 
+          placeholderTextColor="#94a3b8" 
           value={currentThoughts}
           onChangeText={(val) => handleInputChange('thoughts', val)}
           textAlignVertical="top"
@@ -288,4 +365,84 @@ const styles = StyleSheet.create({
   resultSub: { color: '#64748b', fontSize: 14, fontWeight: '500' },
   aiReportBox: { padding: 20, backgroundColor: '#f5f3ff', borderRadius: 20, borderLeftWidth: 5, borderLeftColor: '#8b5cf6', marginBottom: 30 },
   aiReportTitle: { fontSize: 11, fontWeight: '900', color: '#8b5cf6', letterSpacing: 0.5 },
+
+
+
+
+
+  // Стили для обновленного экрана результатов
+  resultHeaderCard: {
+    backgroundColor: '#f8fafc',
+    borderRadius: 24,
+    padding: 24,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    marginBottom: 20,
+  },
+  trophyBadge: {
+    backgroundColor: '#f59e0b',
+    padding: 12,
+    borderRadius: 50,
+    marginBottom: 8,
+  },
+  resultScore: { fontSize: 36, fontWeight: '900', color: '#1e293b' },
+  resultSub: { color: '#64748b', fontSize: 14, fontWeight: '500', marginTop: 2 },
+  
+  aiReportBox: { 
+    padding: 20, 
+    backgroundColor: '#f5f3ff', 
+    borderRadius: 24, 
+    borderLeftWidth: 5, 
+    borderLeftColor: '#8b5cf6', 
+    marginBottom: 24 
+  },
+  aiReportTitle: { fontSize: 12, fontWeight: '900', color: '#8b5cf6', letterSpacing: 0.5 },
+  
+  sectionTitle: { fontSize: 16, fontWeight: '700', color: '#1e293b', marginBottom: 12, paddingLeft: 4 },
+  
+  topicRowCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'between',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+    padding: 14,
+    borderRadius: 16,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  statusIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  topicCodeText: { fontSize: 16, fontWeight: '600', color: '#1e293b' },
+  topicStatusText: { fontSize: 12, color: '#64748b', marginTop: 1 },
+  
+  levelBadge: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+  },
+  levelBadgeText: { fontSize: 13, fontWeight: '700' },
+  
+  btnReturn: { 
+    backgroundColor: '#6366f1', 
+    padding: 18, 
+    borderRadius: 16, 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 20 
+  },
+  btnReturnText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
 });
